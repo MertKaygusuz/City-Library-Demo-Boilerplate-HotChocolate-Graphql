@@ -43,9 +43,29 @@ namespace CityLibraryApi.Services.Book.Classes
             return await _booksRepo.DoesEntityExistAsync((int)Id);
         }
 
-        public async Task<IEnumerable<Books>> GetAllBooks()
+        public IQueryable<Books> GetAllBooks()
         {
-            return await _booksRepo.GetData().ToListAsync();
+            return _booksRepo.GetData();
+        }
+
+        public async Task<IReadOnlyDictionary<int, BookLoaderDto>> GetManyBooksByIds(IEnumerable<int> bookIds)
+        {
+            return await _booksRepo.GetData()
+                            .Where(x => bookIds.Contains(x.BookId))
+                            .Select(x => new BookLoaderDto()
+                            {
+                                BookId = x.BookId,
+                                Author = x.Author,
+                                BookTitle = x.BookTitle,
+                                FirstPublishDate = x.FirstPublishDate,
+                                EditionNumber = x.EditionNumber,
+                                EditionDate = x.EditionDate,
+                                TitleType = x.TitleType,
+                                CoverType = x.CoverType,
+                                AvailableCount = x.AvailableCount,
+                                ReservedCount = x.ReservedCount
+                            })
+                            .ToDictionaryAsync(x => x.BookId);
         }
 
         public async Task<int> GetNumberOfAuthorsFromBookTableAsync()

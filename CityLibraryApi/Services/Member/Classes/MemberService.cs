@@ -90,5 +90,19 @@ namespace CityLibraryApi.Services.Member.Classes
 
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<IReadOnlyDictionary<string, MemberLoaderDto>> GetManyMembersByUserNames(IEnumerable<string> userNames)
+        {
+            return await _membersRepo.GetData()
+                                .Where(x => userNames.Contains(x.UserName))
+                                .Select(x => new MemberLoaderDto()
+                                {
+                                    UserName = x.UserName,
+                                    FullName = x.FullName,
+                                    BirthDate = x.BirthDate,
+                                    Address = x.Address
+                                })
+                                .ToDictionaryAsync(x => x.UserName);
+        }
     }
 }

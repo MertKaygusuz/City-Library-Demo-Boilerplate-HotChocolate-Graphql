@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CityLibraryInfrastructure.Entities;
 
 namespace CityLibraryApi.Services.BookReservation.Interfaces
 {
@@ -17,11 +18,11 @@ namespace CityLibraryApi.Services.BookReservation.Interfaces
 
         Task<IEnumerable<ReservationHistoryBookResponseDto>> GetReservationHistoryPerBookAsync(ReservationHistoryPerBookDto dto);
 
-        Task<IEnumerable<ActiveBookReservationsResponseDto>> GetAllActiveBookReservationsAsync(ActiveBookReservationsFilterDto filter);
+        IQueryable<ActiveBookReservations> GetAllActiveBookReservations();
 
-        Task<IEnumerable<ReservationHistoryMemberResponseDto>> GetReservationHistoryByMemberAsync(ReservationHistoryMemberDto dto);
+        IQueryable<BookReservationHistories> GetReservationHistoryByMember(ReservationHistoryMemberDto dto);
 
-        Task<IEnumerable<ReservationHistoryBookResponseDto>> GetReservationHistoryByBookAsync(ReservationHistoryBookDto dto);
+        IQueryable<BookReservationHistories> GetReservationHistoryByBook(ReservationHistoryBookDto dto);
         /// <summary>
         /// Searches estimated return dates of any reserved book.
         /// </summary>

@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "graphql",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,8 +20,8 @@
     "CityLibrary": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:6002",
+      "launchUrl": "graphql",
+      "applicationUrl": "http://localhost:6003",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -8,10 +8,17 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'CityLibrary' " />
   <ItemGroup>
+    <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="7.2.0" />
+    <PackageReference Include="HotChocolate.Abstractions" Version="12.15.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.1.0" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="12.15.2" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="12.15.2" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" Version="12.15.2" />
+    <PackageReference Include="AppAny.HotChocolate.FluentValidation" Version="0.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,5 +28,24 @@
     <ProjectReference Include="..\CityLibraryInfrastructure\CityLibraryInfrastructure.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="HotChocolate.AspNetCore" />
+    <None Remove="HotChocolate.AspNetCore.Authorization" />
+    <None Remove="HotChocolate.Data.EntityFramework" />
+    <None Remove="AppAny.HotChocolate.FluentValidation" />
+    <None Remove="Schemas\" />
+    <None Remove="Schemas\Query\" />
+    <None Remove="Schemas\Mutations\" />
+    <None Remove="Schemas\Types\" />
+    <None Remove="ServicesExtensions\" />
+    <None Remove="Microsoft.Extensions.Caching.StackExchangeRedis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Schemas\" />
+    <Folder Include="Schemas\Queries\" />
+    <Folder Include="Schemas\Mutations\" />
+    <Folder Include="Schemas\Types\" />
+    <Folder Include="ServicesExtensions\" />
   </ItemGroup>
 </Project>

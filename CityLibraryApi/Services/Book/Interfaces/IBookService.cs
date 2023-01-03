@@ -36,6 +36,13 @@ namespace CityLibraryApi.Services.Book.Interfaces
 
         Task<int> GetNumberOfAuthorsFromBookTableAsync();
 
-        Task<IEnumerable<Books>> GetAllBooks();
+        IQueryable<Books> GetAllBooks();
+        
+        /// <summary>
+        /// Use for graphql resolving book field batch loading.
+        /// </summary>
+        /// <param name="bookIds">Book ids to get data</param>
+        /// <returns></returns>
+        Task<IReadOnlyDictionary<int, BookLoaderDto>> GetManyBooksByIds(IEnumerable<int> bookIds);
     }
 }
