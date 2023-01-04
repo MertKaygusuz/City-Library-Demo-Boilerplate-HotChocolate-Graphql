@@ -91,6 +91,11 @@ namespace CityLibraryApi.Services.Member.Classes
             await _unitOfWork.CommitAsync();
         }
 
+        public IQueryable<MemberResponseDto> GetAllMembers()
+        {
+            return _mapper.MapAsQueryable<Members, MemberResponseDto>(_membersRepo.GetData());
+        }
+
         public async Task<IReadOnlyDictionary<string, MemberLoaderDto>> GetManyMembersByUserNames(IEnumerable<string> userNames)
         {
             return await _membersRepo.GetData()

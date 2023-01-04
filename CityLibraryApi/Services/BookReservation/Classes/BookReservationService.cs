@@ -1,7 +1,6 @@
 ﻿using CityLibraryApi.Dtos.BookReservation;
 using CityLibraryApi.Services.BookReservation.Interfaces;
 using CityLibraryDomain.UnitOfWorks;
-using CityLibraryInfrastructure.BaseInterfaces.Pagination;
 using CityLibraryInfrastructure.Entities;
 using CityLibraryInfrastructure.ExceptionHandling;
 using CityLibraryInfrastructure.Extensions;
@@ -84,40 +83,34 @@ namespace CityLibraryApi.Services.BookReservation.Classes
             
         }
 
-        public async Task<IEnumerable<NumberOfBooksPerTitleAndEditionNumberResponseDto>> GetNumberOfBooksPerTitleAndEditionNumberAsync()
+        public IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber()
         {
-            var result = await _booksRepo.GetData()
-                                         .GroupBy(x => new { x.BookTitle, x.EditionNumber })
-                                         .Select(x => new NumberOfBooksPerTitleAndEditionNumberResponseDto
-                                         {
-                                             BookTitle = x.Key.BookTitle,
-                                             EditionNumber = x.Key.EditionNumber,
-                                             Count = x.Sum(y => y.AvailableCount)
-                                         }).ToArrayAsync();
-
-            return result;
+            return _booksRepo.GetData()
+                .GroupBy(x => new { x.BookTitle, x.EditionNumber })
+                .Select(x => new NumberOfBooksPerTitleAndEditionNumberResponseDto
+                {
+                    BookTitle = x.Key.BookTitle,
+                    EditionNumber = x.Key.EditionNumber,
+                    Count = x.Sum(y => y.AvailableCount)
+                });
         }
 
-        public async Task<IEnumerable<NumberOfBooksReservedByMembersResponseDto>> GetNumberOfBooksReservedPerMembersAsync()
+        public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers()
         {
-            //TODO: groupby incele
-            var result = await _activeBookReservationsRepo.GetData()
-                                                          .Select(x => new
-                                                          {
-                                                              x.MemberId,
-                                                              x.Member.FullName
-                                                          })
-                                                          .GroupBy(x => new { x.MemberId, x.FullName })
-                                                          .Select(x => new NumberOfBooksReservedByMembersResponseDto
-                                                          {
-                                                              MemberName = x.Key.MemberId,
-                                                              MemberFullName = x.Key.FullName,
-                                                              ActiveBookReservationsCount = x.Count()
-                                                          })
-                                                          .ToArrayAsync();
 
-
-            return result;
+            return _activeBookReservationsRepo.GetData()
+                .Select(x => new
+                {
+                    x.MemberId,
+                    x.Member.FullName
+                })
+                .GroupBy(x => new { x.MemberId, x.FullName })
+                .Select(x => new NumberOfBooksReservedByMembersResponseDto
+                {
+                    MemberName = x.Key.MemberId,
+                    MemberFullName = x.Key.FullName,
+                    ActiveBookReservationsCount = x.Count()
+                });
         }
 
         public IQueryable<BookReservationHistories> GetReservationHistoryByBook(ReservationHistoryBookDto dto)
@@ -129,57 +122,7 @@ namespace CityLibraryApi.Services.BookReservation.Classes
         {
             return _bookReservationHistoriesRepo.GetData().Where(x => x.MemberId == dto.UserName);
         }
-
-        public async Task<IEnumerable<ReservationHistoryBookResponseDto>> GetReservationHistoryPerBookAsync(ReservationHistoryPerBookDto dto)
-        {
-            //TODO: farklı query düzenleri deneme
-            var baseQuery = (from z in _bookReservationHistoriesRepo.GetData()
-                            select new { z.BookId, z.MemberId, z.ReturnDate, z.RecievedDate } into BookMember
-                            let book = _booksRepo.GetById(BookMember.BookId)
-                            let member = _membersRepo.GetById(BookMember.MemberId)
-                            select new ReservationHistoryBookResponseDto
-                            {
-                                BookTitle = book.BookTitle,
-                                FirstPublishDate = book.FirstPublishDate,
-                                EditionNumber = book.EditionNumber,
-                                EditionDate = book.EditionDate,
-                                ReturnDate = BookMember.ReturnDate,
-                                RecievedDate = BookMember.RecievedDate,
-                                UserName = BookMember.MemberId,
-                                FullName = member.FullName
-                            }).OrderBy(dto.SortingModel).Skip(dto.Skip);
-
-            if (dto.Take > 0)
-                baseQuery = baseQuery.Take(dto.Take);
-
-            return await baseQuery.ToArrayAsync();
-        }
-
-        public async Task<IEnumerable<ReservationHistoryMemberResponseDto>> GetReservationHistoryPerMemberAsync(ReservationHistoryPerMemberDto dto)
-        {
-            //TODO: farklı query düzenleri deneme
-            var baseQuery = (from z in _bookReservationHistoriesRepo.GetData()
-                             select new { z.BookId, z.MemberId, z.ReturnDate, z.RecievedDate } into BookMember
-                             let book = _booksRepo.GetById(BookMember.BookId)
-                             let member = _membersRepo.GetById(BookMember.MemberId)
-                             select new ReservationHistoryMemberResponseDto
-                             {
-                                 UserName = BookMember.MemberId,
-                                 FullName = member.FullName,
-                                 BookTitle = book.BookTitle,
-                                 FirstPublishDate = book.FirstPublishDate,
-                                 EditionNumber = book.EditionNumber,
-                                 EditionDate = book.EditionDate,
-                                 ReturnDate = BookMember.ReturnDate,
-                                 RecievedDate = BookMember.RecievedDate
-                             }).OrderBy(dto.SortingModel).Skip(dto.Skip);
-
-            if (dto.Take > 0)
-                baseQuery = baseQuery.Take(dto.Take);
-            
-
-            return await baseQuery.ToArrayAsync();
-        }
+        
 
         public IEnumerable<DateTime> GetReservedBooksEstimatedReturnDates(ReservedBookEstimatedReturnDatesDto dto)
         {

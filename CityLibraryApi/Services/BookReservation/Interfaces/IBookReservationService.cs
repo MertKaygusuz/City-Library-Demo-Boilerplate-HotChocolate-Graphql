@@ -10,13 +10,9 @@ namespace CityLibraryApi.Services.BookReservation.Interfaces
 {
     public interface IBookReservationService
     {
-        Task<IEnumerable<NumberOfBooksPerTitleAndEditionNumberResponseDto>> GetNumberOfBooksPerTitleAndEditionNumberAsync();
+        IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber();
 
-        Task<IEnumerable<NumberOfBooksReservedByMembersResponseDto>> GetNumberOfBooksReservedPerMembersAsync();
-
-        Task<IEnumerable<ReservationHistoryMemberResponseDto>> GetReservationHistoryPerMemberAsync(ReservationHistoryPerMemberDto dto);
-
-        Task<IEnumerable<ReservationHistoryBookResponseDto>> GetReservationHistoryPerBookAsync(ReservationHistoryPerBookDto dto);
+        IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers();
 
         IQueryable<ActiveBookReservations> GetAllActiveBookReservations();
 

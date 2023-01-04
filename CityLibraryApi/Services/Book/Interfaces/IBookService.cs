@@ -36,7 +36,7 @@ namespace CityLibraryApi.Services.Book.Interfaces
 
         Task<int> GetNumberOfAuthorsFromBookTableAsync();
 
-        IQueryable<Books> GetAllBooks();
+        IQueryable<BookResponseDto> GetAllBooks();
         
         /// <summary>
         /// Use for graphql resolving book field batch loading.

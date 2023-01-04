@@ -33,6 +33,8 @@ namespace CityLibraryApi.Services.Member.Interfaces
         /// <param name="registrationDto">Includes UserName and update parameters. UserName could not be updated.</param>
         /// <returns></returns>
         Task AdminUpdateMemberAsync(RegistrationDto registrationDto);
+        
+        IQueryable<MemberResponseDto> GetAllMembers();
 
         /// <summary>
         /// Use for graphql resolving member field batch loading.

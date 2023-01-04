@@ -43,9 +43,9 @@ namespace CityLibraryApi.Services.Book.Classes
             return await _booksRepo.DoesEntityExistAsync((int)Id);
         }
 
-        public IQueryable<Books> GetAllBooks()
+        public IQueryable<BookResponseDto> GetAllBooks()
         {
-            return _booksRepo.GetData();
+            return _mapper.MapAsQueryable<Books, BookResponseDto>(_booksRepo.GetData());
         }
 
         public async Task<IReadOnlyDictionary<int, BookLoaderDto>> GetManyBooksByIds(IEnumerable<int> bookIds)

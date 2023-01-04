@@ -124,6 +124,8 @@ namespace CityLibrary.Graphql.ServicesExtensions
                 .AddMutationType<Mutation>()
                 .AddType<AuthQuery>()
                 .AddType<BookReservationQuery>()
+                .AddType<BookQuery>()
+                .AddType<MemberQuery>()
                 .AddType<MemberMutation>()
                 .AddType<BookMutation>()
                 .AddType<BookReservationMutation>()

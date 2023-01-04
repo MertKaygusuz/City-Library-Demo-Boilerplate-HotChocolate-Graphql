@@ -1,7 +1,6 @@
 using CityLibrary.Graphql.DataLoaders;
 using CityLibraryApi.Dtos.Book;
 using CityLibraryApi.Dtos.Member;
-using CityLibraryInfrastructure.Entities;
 
 namespace CityLibrary.Graphql.Schemas.Types;
 

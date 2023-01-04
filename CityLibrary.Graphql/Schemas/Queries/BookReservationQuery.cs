@@ -2,6 +2,7 @@ using AppAny.HotChocolate.FluentValidation;
 using CityLibrary.Graphql.Schemas.Types;
 using CityLibraryApi.Dtos.BookReservation;
 using CityLibraryApi.Services.BookReservation.Interfaces;
+using HotChocolate.AspNetCore.Authorization;
 
 namespace CityLibrary.Graphql.Schemas.Queries;
 
@@ -47,5 +48,22 @@ public class BookReservationQuery
                 MemberId = x.MemberId,
                 BookId = x.BookId
             });
+    }
+
+    public IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber([Service] IBookReservationService reservationService)
+    {
+        return reservationService.GetNumberOfBooksPerTitleAndEditionNumber();
+    }
+    
+    public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers([Service] IBookReservationService reservationService)
+    {
+        return reservationService.GetNumberOfBooksReservedPerMembers();
+    }
+    
+    public IEnumerable<DateTime> GetReservedBooksEstimatedReturnDates(
+        [UseFluentValidation] ReservedBookEstimatedReturnDatesDto dto,
+        [Service] IBookReservationService reservationService)
+    {
+        return reservationService.GetReservedBooksEstimatedReturnDates(dto);
     }
 }
