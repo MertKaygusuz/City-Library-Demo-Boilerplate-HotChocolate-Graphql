@@ -165,7 +165,7 @@ namespace CityLibrary.Graphql.ServicesExtensions
                     {
                         if (environment.IsDevelopment())
                         {
-                            IError returningEror = new Error(error.Message, "INTERNAL_SERVER_ERROR");
+                            IError returningEror = new Error(error.Message, error.Code ?? "INTERNAL_SERVER_ERROR");
                             return returningEror.WithExtensions(new Dictionary<string, object>()
                             {
                                 { "stackTrace", error.Exception?.StackTrace }
@@ -173,7 +173,7 @@ namespace CityLibrary.Graphql.ServicesExtensions
                         }
                         else
                         {
-                            IError returningEror = new Error("INTERNAL_SERVER_ERROR", "INTERNAL_SERVER_ERROR");
+                            IError returningEror = new Error("INTERNAL_SERVER_ERROR", error.Code ?? "INTERNAL_SERVER_ERROR");
                             return returningEror;
                         }
                     }

@@ -9,6 +9,7 @@ namespace CityLibrary.Graphql.Schemas.Queries;
 [ExtendObjectType(typeof(Query))]
 public class BookReservationQuery
 {
+    [Authorize(Roles = new [] { "Admin" })]
     public IQueryable<ActiveBookReservationResolverType> GetAllActiveBookReservations([Service] IBookReservationService reservationService)
     {
         return reservationService.GetAllActiveBookReservations().Select(x => new ActiveBookReservationResolverType()
@@ -20,6 +21,7 @@ public class BookReservationQuery
         });
     }
     
+    [Authorize(Roles = new [] { "Admin" })]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByMember(
         [UseFluentValidation] ReservationHistoryMemberDto dto,
         [Service] IBookReservationService reservationService)
@@ -35,6 +37,7 @@ public class BookReservationQuery
             });
     }
     
+    [Authorize(Roles = new [] { "Admin" })]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByBook(
         [UseFluentValidation] ReservationHistoryBookDto dto,
         [Service] IBookReservationService reservationService)
@@ -55,6 +58,7 @@ public class BookReservationQuery
         return reservationService.GetNumberOfBooksPerTitleAndEditionNumber();
     }
     
+    [Authorize(Roles = new [] { "Admin" })]
     public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers([Service] IBookReservationService reservationService)
     {
         return reservationService.GetNumberOfBooksReservedPerMembers();

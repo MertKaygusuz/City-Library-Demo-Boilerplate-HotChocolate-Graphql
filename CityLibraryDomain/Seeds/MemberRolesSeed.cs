@@ -13,38 +13,36 @@ namespace CityLibraryDomain.Seeds
     {
         public void Configure(EntityTypeBuilder<MemberRoles> builder)
         {
-            builder.HasData(
-                new MemberRoles
+            var memberRoles = new MemberRoles[12];
+            
+            memberRoles[0] = new MemberRoles
+            {
+                Id = 1,
+                RoleId = 1,
+                MemberId = "Admin",
+                CreatedAt = DateTime.Now
+            };
+            memberRoles[1] = new MemberRoles
+            {
+                Id = 2,
+                RoleId = 2,
+                MemberId = "Admin",
+                CreatedAt = DateTime.Now
+            };
+            int id = 2;
+            for (int i = 1; i <= 10; i++)
+            {
+                memberRoles[id] = new MemberRoles()
                 {
-                    Id = 1,
-                    RoleId = 1,
-                    MemberId = "Admin",
-                },
-                new MemberRoles
-                {
-                    Id = 2,
+                    Id = id + 1,
                     RoleId = 2,
-                    MemberId = "Admin",
-                },
-                 new MemberRoles
-                 {
-                     Id = 3,
-                     RoleId = 2,
-                     MemberId = "User1",
-                 },
-                 new MemberRoles
-                 {
-                     Id = 4,
-                     RoleId = 2,
-                     MemberId = "User2",
-                 },
-                 new MemberRoles
-                 {
-                     Id = 5,
-                     RoleId = 2,
-                     MemberId = "User3",
-                 }
-            );
+                    MemberId = $"User{i}",
+                    CreatedAt = DateTime.Now
+                };
+                id++;
+            }
+            
+            builder.HasData(memberRoles);
         }
     }
 }

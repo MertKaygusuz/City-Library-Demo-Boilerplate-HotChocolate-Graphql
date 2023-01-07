@@ -8,6 +8,7 @@
         Science,
         Business,
         Education,
-        Religious
+        Religious,
+        Philosophy
     }
 }
