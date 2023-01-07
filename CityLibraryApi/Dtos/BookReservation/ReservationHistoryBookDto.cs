@@ -10,8 +10,6 @@ namespace CityLibraryApi.Dtos.BookReservation
 {
     public class ReservationHistoryBookDto
     {
-        [Key]
-        [DisplayName("Book")]
         public int BookId { get; set; }
     }
 }

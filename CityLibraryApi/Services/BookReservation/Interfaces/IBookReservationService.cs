@@ -40,8 +40,6 @@ namespace CityLibraryApi.Services.BookReservation.Interfaces
         /// <returns></returns>
         Task UnAssignBookFromUserAsync(AssignBookToMemberDto dto); //uses same dto
 
-        Task<bool> CheckIfMemberExistsAsync(string UserName);
-
         Task<bool> CheckIfBookExistsAsync(int bookId);
 
         Task<bool> CheckIfAnyAvailableBooksAsync(int bookId);

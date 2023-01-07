@@ -11,8 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using CityLibraryInfrastructure.ExceptionHandling.Dtos;
 using CityLibraryInfrastructure.Resources;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 namespace CityLibraryApi.Services.BookReservation.Classes
@@ -43,7 +46,36 @@ namespace CityLibraryApi.Services.BookReservation.Classes
 
         public async Task AssignBookToMemberAsync(AssignBookToMemberDto dto)
         {
-            var theBook = await _booksRepo.GetByIdAsync(dto.BookId);
+            #region existence check
+            var memberExistanceTask = _membersRepo.DoesEntityExistAsync(dto.UserName);
+            var bookTask = _booksRepo.GetByIdAsync(dto.BookId);
+            await Task.WhenAll(memberExistanceTask, bookTask);
+            var memberExist = memberExistanceTask.Result;
+            var theBook = bookTask.Result;
+            
+            if (!(memberExist && theBook is not null))
+            {
+                var err = new ErrorDto();
+                if (!memberExist)
+                    err.Errors.Add(nameof(dto.UserName), new List<string>() { _localizer["User_Name_Not_Exist"] });
+
+                if(theBook is null)
+                    err.Errors.Add(nameof(dto.BookId), new List<string>() { _localizer["Book_Not_Exist"] });
+
+                throw new CustomException(JsonSerializer.Serialize(err), true);
+            }
+            
+            bool isThereAnyAvailableBook = await CheckIfAnyAvailableBooksAsync(dto.BookId);
+
+            if(isThereAnyAvailableBook is false)
+            {
+                var err = new ErrorDto();
+                err.Errors.Add(nameof(dto.BookId), new List<string>() { _localizer["Book_Not_Available"] });
+                throw new CustomException(JsonSerializer.Serialize(err), true);
+            }
+            #endregion
+            
+
             theBook.AvailableCount -= 1;
             theBook.ReservedCount += 1;
             ActiveBookReservations reservation = new()
@@ -70,11 +102,6 @@ namespace CityLibraryApi.Services.BookReservation.Classes
         public async Task<bool> CheckIfBookExistsAsync(int bookId)
         {
             return await _booksRepo.DoesEntityExistAsync(bookId);
-        }
-
-        public async Task<bool> CheckIfMemberExistsAsync(string UserName)
-        {
-            return await _membersRepo.DoesEntityExistAsync(UserName);
         }
 
         public IQueryable<ActiveBookReservations> GetAllActiveBookReservations()
@@ -132,25 +159,47 @@ namespace CityLibraryApi.Services.BookReservation.Classes
                                                                                 .Order();
                                                           
             if (!result.Any())
-                throw new CustomBusinessException(_localizer["No_Reservation_On_Search"]);
+                throw new CustomException(_localizer["No_Reservation_On_Search"]);
 
             return result;
         }
 
         public async Task UnAssignBookFromUserAsync(AssignBookToMemberDto dto)
         {
+            #region existence check
+            var memberExistanceTask = _membersRepo.DoesEntityExistAsync(dto.UserName);
+            var bookTask = _booksRepo.GetByIdAsync(dto.BookId);
+            await Task.WhenAll(memberExistanceTask, bookTask);
+            var memberExist = memberExistanceTask.Result;
+            var bookRecord = bookTask.Result;
+            
+            if (!(memberExist && bookRecord is not null))
+            {
+                var err = new ErrorDto();
+                if (!memberExist)
+                    err.Errors.Add(nameof(dto.UserName), new List<string>() { _localizer["User_Name_Not_Exist"] });
+
+                if(bookRecord is null)
+                    err.Errors.Add(nameof(dto.BookId), new List<string>() { _localizer["Book_Not_Exist"] });
+
+                throw new CustomException(JsonSerializer.Serialize(err), true);
+            }
+            #endregion
+
+            #region active reservation check
             //get first record on the basis of ReturnDate
             var activeReservation = await _activeBookReservationsRepo.GetDataWithLinqExp(x => x.MemberId == dto.UserName
-                                                                                           && x.BookId == dto.BookId)
-                                                                     .OrderBy(x => x.ReturnDate)
-                                                                     .FirstOrDefaultAsync();
-
-            var bookRecord = await _booksRepo.GetByIdAsync(dto.BookId);
-            bookRecord.ReservedCount -= 1;
-            bookRecord.AvailableCount += 1;
+                    && x.BookId == dto.BookId)
+                .OrderBy(x => x.ReturnDate)
+                .FirstOrDefaultAsync();
 
             if (activeReservation is null)
-                throw new CustomBusinessException(_localizer["Active_Book_Reservation_Not_Found"]);
+                throw new CustomException(_localizer["Active_Book_Reservation_Not_Found"]);
+            #endregion
+            
+            
+            bookRecord.ReservedCount -= 1;
+            bookRecord.AvailableCount += 1;
 
             var historyRecord = new BookReservationHistories()
             {

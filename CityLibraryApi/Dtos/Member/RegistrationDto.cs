@@ -6,8 +6,6 @@ namespace CityLibraryApi.Dtos.Member
 {
     public class RegistrationDto
     {
-        [Key]
-        [DisplayName("Member")]
         public string UserName { get; set; }
 
         public string FullName { get; set; }

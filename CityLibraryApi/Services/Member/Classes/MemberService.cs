@@ -1,6 +1,5 @@
 ﻿using CityLibraryApi.Dtos.Member;
 using CityLibraryApi.Services.Member.Interfaces;
-using CityLibraryDomain.ContextRelated;
 using CityLibraryDomain.UnitOfWorks;
 using CityLibraryInfrastructure.Entities;
 using CityLibraryInfrastructure.Extensions;
@@ -12,8 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using CityLibraryInfrastructure.ExceptionHandling;
+using CityLibraryInfrastructure.ExceptionHandling.Dtos;
 using CityLibraryInfrastructure.Resources;
 using Microsoft.Extensions.Localization;
 
@@ -56,9 +57,23 @@ namespace CityLibraryApi.Services.Member.Classes
             
             newMember.Roles.AddRange(roles);
 
-            await _membersRepo.InsertAsync(newMember);
+            try
+            {
+                await _membersRepo.InsertAsync(newMember);
 
-            await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
+            }
+            catch (ArgumentException exc)
+            {
+                if (exc.Message.Contains("An item with the same key has already been added"))
+                {
+                    var err = new ErrorDto();
+                    err.Errors.Add(nameof(registrationDto.UserName), new List<string>() { string.Format(_localizer["User_Name_Check"], registrationDto.UserName) });
+                    throw new CustomException(JsonSerializer.Serialize(err), true);
+                }
+                throw;
+            }
+           
 
             return newMember.UserName;
         }
@@ -72,7 +87,7 @@ namespace CityLibraryApi.Services.Member.Classes
         {
             string myUserName = GetMyUserId();
             if (string.IsNullOrEmpty(myUserName) || !await _membersRepo.DoesEntityExistAsync(myUserName))
-                throw new CustomBusinessException(_localizer["Member_Not_Found"]);
+                throw new CustomException(_localizer["Member_Not_Found"]);
 
             var registrationDto = _mapper.Map<MemberSelfUpdateDto, RegistrationDto>(selfUpdateDto);
             registrationDto.UserName = myUserName;
@@ -82,6 +97,8 @@ namespace CityLibraryApi.Services.Member.Classes
         public async Task AdminUpdateMemberAsync(RegistrationDto registrationDto)
         {
             Members theMember = await _membersRepo.GetByIdAsync(registrationDto.UserName);
+            if (theMember is null)
+                throw new CustomException(_localizer["Member_Not_Found"]);
             theMember.FullName = registrationDto.FullName;
             theMember.BirthDate = registrationDto.BirthDate;
             theMember.Address = registrationDto.Address;

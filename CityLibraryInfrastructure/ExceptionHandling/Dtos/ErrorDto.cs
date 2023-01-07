@@ -6,30 +6,27 @@ namespace CityLibraryInfrastructure.ExceptionHandling.Dtos;
 [Serializable]
 public class ErrorDto
 {
-    public ErrorDto(int status = 400)
+    public ErrorDto()
     {
-        Status = status;
+        
     }
 
     /// <summary>
     /// Create new instance and set the errors to "CustomError" key in Errors dictionary
     /// </summary>
-    public ErrorDto(IEnumerable<string> errors, int status = 400)
+    public ErrorDto(IEnumerable<string> errors)
     {
         Errors.Add("CustomError", errors);
-        Status = status;
     }
 
     /// <summary>
     /// Create new instance and set only one error text to "CustomError" key in Errors dictionary
     /// </summary>
-    public ErrorDto(string errorText, int status = 400)
+    public ErrorDto(string errorText)
     {
         Errors.Add("CustomError", new List<string>() {errorText});
-        Status = status;
     }
-    
-    public int Status { get; set; }
+
 
     public string InternalErrorMessage { get; set; }
 

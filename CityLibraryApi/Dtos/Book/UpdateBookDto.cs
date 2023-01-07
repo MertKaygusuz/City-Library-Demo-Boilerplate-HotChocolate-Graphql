@@ -10,9 +10,6 @@ namespace CityLibraryApi.Dtos.Book
 {
     public class UpdateBookDto : RegisterBookDto
     {
-        //this annotations are required for GenericNotFoundFilter
-        [Key]
-        [DisplayName("Book")]
         public int BookId { get; set; }
     }
 }

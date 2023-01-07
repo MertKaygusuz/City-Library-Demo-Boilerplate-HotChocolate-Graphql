@@ -2,14 +2,14 @@ using AppAny.HotChocolate.FluentValidation;
 using CityLibraryApi.Dtos.Member;
 using CityLibraryApi.Services.Member.Interfaces;
 using HotChocolate.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CityLibrary.Graphql.Schemas.Mutations;
 
 [ExtendObjectType(typeof(Mutation))]
 public class MemberMutation
 {
-    
-    public async Task<string> Register([UseFluentValidation] RegistrationDto dto, [Service] IMemberService memberService)
+    public async Task<string> MemberRegister([UseFluentValidation] RegistrationDto dto, [Service] IMemberService memberService)
     {
         return await memberService.RegisterAsync(dto);
     }

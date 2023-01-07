@@ -41,7 +41,7 @@ namespace CityLibraryApi.Services.Token.Classes
         {
             var member = await _memberService.GetMemberByUserNameAsync(loginDto.UserName);
             if (member is null || loginDto.Password.VerifyPasswordHash(member.Password) is false)
-                throw new CustomBusinessException(_localizer["Login_Fail"]);
+                throw new CustomException(_localizer["Login_Fail"]);
 
             CreateTokenDto createTokenDto = new()
             {
@@ -80,10 +80,10 @@ namespace CityLibraryApi.Services.Token.Classes
             RefreshTokens oldToken = await _refreshTokenService.GetByKeyAsync(refreshTokenKey);
 
             if (oldToken is null)
-                throw new CustomBusinessException("Refresh token could not be found!");
+                throw new CustomException("Refresh token could not be found!");
 
             if (DateTime.Compare(DateTime.Now, oldToken.DueTime) > 1)
-                throw new CustomStatusException(_localizer["Session_Timeout"], 401);
+                throw new CustomException(_localizer["Session_Timeout"]);
             
 
             CreateTokenDto createTokenDto = new()

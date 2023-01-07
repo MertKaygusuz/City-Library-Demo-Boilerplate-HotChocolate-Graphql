@@ -16,6 +16,7 @@ using AppAny.HotChocolate.FluentValidation;
 using CityLibrary.Graphql.DataLoaders;
 using CityLibrary.Graphql.Schemas.Mutations;
 using CityLibrary.Graphql.Schemas.Queries;
+using CityLibraryInfrastructure.ExceptionHandling;
 
 namespace CityLibrary.Graphql.ServicesExtensions
 {
@@ -60,16 +61,13 @@ namespace CityLibrary.Graphql.ServicesExtensions
               .Where(c => c.Name.EndsWith("Service"))
               .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
-            services.AddTransientServices(assembliesToScan);
+            // services.AddTransientServices(assembliesToScan);
         }
 
-        private static void AddTransientServices(this IServiceCollection services, Assembly[] assembliesToScan)
-        {
-            // services.AddTransient(typeof(GenericNotFoundFilter<>));
-            services.RegisterAssemblyPublicNonGenericClasses(assembliesToScan)
-              .Where(c => c.Name.EndsWith("Filter"))
-              .AsPublicImplementedInterfaces(ServiceLifetime.Transient);
-        }
+        // private static void AddTransientServices(this IServiceCollection services, Assembly[] assembliesToScan)
+        // {
+        //
+        // }
 
         private static void AddCustomJwtService(this IServiceCollection services, TokenOptions tokenOptions)
         {
@@ -115,8 +113,9 @@ namespace CityLibrary.Graphql.ServicesExtensions
             });
         }
 
-        public static void AddGraphqlConfiguraiton(this IServiceCollection services)
-        {
+        public static void AddGraphqlConfiguraiton(this IServiceCollection services, IWebHostEnvironment environment)
+        { 
+            const string fluentValidationCode = "FLUENT_VALIDATION_ERROR";
             services
                 .AddGraphQLServer()
                 .AddAuthorization()
@@ -137,9 +136,49 @@ namespace CityLibrary.Graphql.ServicesExtensions
                         builder.SetExtension("property", context.ValidationFailure.PropertyName);
                         builder.SetExtension("value", context.ValidationFailure.AttemptedValue);
                     
-                        builder.SetCode("FluentValidationError");
+                        builder.SetCode(fluentValidationCode);
                     });
                     // o.UseDefaultErrorMapperWithDetails();
+                })
+                .AddErrorFilter(error =>
+                {
+                    if (error.Exception is CustomException exception1)
+                    {
+                        IError returningEror = new Error(exception1.Message, "CUSTOM_EXCEPTION");
+
+                        if (exception1.Serialized)
+                        {
+                            return returningEror.WithExtensions(new Dictionary<string, object>()
+                            {
+                                { "serialized", true }
+                            });
+                        }
+                        else
+                        {
+                            return returningEror.WithExtensions(new Dictionary<string, object>()
+                            {
+                                { "serialized", false }
+                            });
+                        }
+                    }
+                    else if (error.Code is not fluentValidationCode)
+                    {
+                        if (environment.IsDevelopment())
+                        {
+                            IError returningEror = new Error(error.Message, "INTERNAL_SERVER_ERROR");
+                            return returningEror.WithExtensions(new Dictionary<string, object>()
+                            {
+                                { "stackTrace", error.Exception?.StackTrace }
+                            });
+                        }
+                        else
+                        {
+                            IError returningEror = new Error("INTERNAL_SERVER_ERROR", "INTERNAL_SERVER_ERROR");
+                            return returningEror;
+                        }
+                    }
+
+                    return error;
                 });
             
             services.AddDataLoadersForGraphqlResolvers();

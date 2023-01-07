@@ -1,7 +1,6 @@
 ﻿using CityLibrary.Graphql.ServicesExtensions;
 using CityLibraryApi.MapperConfigurations;
 using CityLibraryInfrastructure.AppSettings;
-using CityLibraryInfrastructure.ExceptionHandling.Extensions;
 using CityLibraryInfrastructure.Extensions;
 using CityLibraryInfrastructure.Extensions.TokenExtensions;
 using CityLibraryInfrastructure.Resources;
@@ -39,7 +38,7 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<MapsterMapping>();
 
 builder.Services.AddRangeCustomServices(appSetting);
-builder.Services.AddGraphqlConfiguraiton();
+builder.Services.AddGraphqlConfiguraiton(builder.Environment);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -73,8 +72,6 @@ app.UseCors(opts =>
         // Content dispositon is useful for getting file name for frontend application
         opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().WithExposedHeaders("Content-Disposition")
 );
-
-app.UseCustomGlobalExceptionHandler(app.Services.GetService<IStringLocalizer<SharedResource>>());
 
 app.UseRouting();
 

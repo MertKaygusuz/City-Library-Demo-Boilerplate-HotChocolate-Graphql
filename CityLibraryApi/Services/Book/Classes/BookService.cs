@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CityLibraryInfrastructure.ExceptionHandling;
+using CityLibraryInfrastructure.Resources;
+using Microsoft.Extensions.Localization;
 
 namespace CityLibraryApi.Services.Book.Classes
 {
@@ -18,11 +21,16 @@ namespace CityLibraryApi.Services.Book.Classes
         private readonly IBooksRepo _booksRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomMapper _mapper;
-        public BookService(IBooksRepo booksRepo, IUnitOfWork unitOfWork, ICustomMapper customMapper)
+        private readonly IStringLocalizer<DisplayNameResource> _localizer;
+        public BookService(IBooksRepo booksRepo,
+            IStringLocalizer<DisplayNameResource> localizer,
+            IUnitOfWork unitOfWork, 
+            ICustomMapper customMapper)
         {
             _booksRepo = booksRepo;
             _unitOfWork = unitOfWork;
             _mapper = customMapper;
+            _localizer = localizer;
         }
         public async Task<int> BookRegisterAsync(RegisterBookDto dto)
         {
@@ -34,8 +42,18 @@ namespace CityLibraryApi.Services.Book.Classes
 
         public async Task DeleteBookAsync(DeleteBookDto dto)
         {
-            await _booksRepo.DeleteByIdAsync(dto.BookId);
-            await _unitOfWork.CommitAsync();
+            try
+            {
+                await _booksRepo.DeleteByIdAsync(dto.BookId);
+                await _unitOfWork.CommitAsync();
+            }
+            catch (ArgumentNullException)
+            {
+                string localizedFieldName = _localizer["Book"];
+                string errorMesage = string.Format(_localizer["Display_Name_Not_Found"], localizedFieldName);
+                throw new CustomException(errorMesage);
+            }
+            
         }
 
         public async Task<bool> DoesEntityExistAsync(IConvertible Id)
@@ -81,6 +99,12 @@ namespace CityLibraryApi.Services.Book.Classes
         public async Task UpdateBookInfoAsync(UpdateBookDto dto)
         {
             var existingBook = await _booksRepo.GetByIdAsync(dto.BookId);
+            if (existingBook is null)
+            {
+                string localizedFieldName = _localizer["Book"];
+                string errorMesage = string.Format(_localizer["Display_Name_Not_Found"], localizedFieldName);
+                throw new CustomException(errorMesage);
+            }
             _mapper.MapToExistingObject(dto, existingBook);
             await _unitOfWork.CommitAsync();
         }

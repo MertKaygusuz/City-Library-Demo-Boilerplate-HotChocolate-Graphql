@@ -7,9 +7,9 @@ namespace CityLibrary.Graphql.Schemas.Mutations;
 
 
 [ExtendObjectType(typeof(Mutation))]
-[Authorize(Roles = new [] { "Admin" })]
 public class BookReservationMutation
 {
+    [Authorize(Roles = new [] { "Admin" })]
     public async Task<bool> AssignBookToMember(
         [UseFluentValidation]AssignBookToMemberDto dto, 
         [Service] IBookReservationService bookReservationService)
@@ -18,6 +18,7 @@ public class BookReservationMutation
         return true;
     }
     
+    [Authorize(Roles = new [] { "Admin" })]
     public async Task<bool> UnAssignBookFromUser(
         [UseFluentValidation]AssignBookToMemberDto dto, 
         [Service] IBookReservationService bookReservationService)

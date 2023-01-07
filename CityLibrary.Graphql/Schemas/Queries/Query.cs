@@ -12,7 +12,7 @@ namespace CityLibrary.Graphql.Schemas.Queries
 		
 		public TestType ThrowCustomException()
 		{
-			throw new CustomStatusException("Not found", 404);
+			throw new CustomException("Not found");
 			return new TestType("test", 123);
 		}
 		
