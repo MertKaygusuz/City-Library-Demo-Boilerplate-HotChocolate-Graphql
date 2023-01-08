@@ -19,7 +19,7 @@ public class BookQuery
     
     [Authorize(Roles = new [] { "Admin" })]
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 5, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
-    public IQueryable<BookResponseDto> GetAllBooks([Service] IBookService bookService)
+    public IQueryable<BookResponseDto> GetAllBooks([Service(ServiceKind.Resolver)] IBookService bookService)
     {
         return bookService.GetAllBooks();
     }

@@ -17,6 +17,7 @@ using CityLibrary.Graphql.DataLoaders;
 using CityLibrary.Graphql.Schemas.Mutations;
 using CityLibrary.Graphql.Schemas.Queries;
 using CityLibraryInfrastructure.ExceptionHandling;
+using Serilog;
 
 namespace CityLibrary.Graphql.ServicesExtensions
 {
@@ -31,7 +32,8 @@ namespace CityLibrary.Graphql.ServicesExtensions
             {
                 var triggerAssembly = Assembly.GetAssembly(typeof(AppDbContext));
                 options.UseTriggers(triggerOptions => triggerOptions.AddAssemblyTriggers(triggerAssembly!));
-                options.UseInMemoryDatabase(appSetting.DbConnectionString);
+                options.UseSqlite(appSetting.DbConnectionString).LogTo(Log.Logger.Information, LogLevel.Information);
+                // options.UseInMemoryDatabase(appSetting.DbConnectionString);
             });
 
             services.AddSingleton<ICustomMapper, MapsterMapping>();
@@ -118,6 +120,7 @@ namespace CityLibrary.Graphql.ServicesExtensions
             const string fluentValidationCode = "FLUENT_VALIDATION_ERROR";
             services
                 .AddGraphQLServer()
+                .RegisterDbContext<AppDbContext>()
                 .AddAuthorization()
                 .AddQueryType<Query>()
                 .AddMutationType<Mutation>()

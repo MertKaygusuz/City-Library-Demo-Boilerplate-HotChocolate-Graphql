@@ -6,7 +6,6 @@ using HotChocolate.AspNetCore.Authorization;
 namespace CityLibrary.Graphql.Schemas.Mutations;
 
 [ExtendObjectType(typeof(Mutation))]
-
 public class BookMutation
 {
     [Authorize(Roles = new [] { "Admin" })]
@@ -25,7 +24,7 @@ public class BookMutation
     [Authorize(Roles = new [] { "Admin" })]
     public async Task<bool> DeleteBook([UseFluentValidation]DeleteBookDto dto, [Service] IBookService bookService)
     {
-        await bookService.DeleteBookAsync(dto);
+        await bookService.DeleteByIdWithBuilDelete(dto);
         return true;
     }
 }

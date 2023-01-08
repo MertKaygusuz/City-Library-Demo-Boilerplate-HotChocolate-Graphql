@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using CityLibraryInfrastructure.ExceptionHandling;
 using CityLibraryInfrastructure.Resources;
 using Microsoft.Extensions.Localization;
+using static CityLibraryInfrastructure.Extensions.TokenExtensions.AccesInfoFromToken;
 
 namespace CityLibraryApi.Services.Book.Classes
 {
@@ -38,22 +39,6 @@ namespace CityLibraryApi.Services.Book.Classes
             await _booksRepo.InsertAsync(bookToAdd);
             await _unitOfWork.CommitAsync();
             return bookToAdd.BookId;
-        }
-
-        public async Task DeleteBookAsync(DeleteBookDto dto)
-        {
-            try
-            {
-                await _booksRepo.DeleteByIdAsync(dto.BookId);
-                await _unitOfWork.CommitAsync();
-            }
-            catch (ArgumentNullException)
-            {
-                string localizedFieldName = _localizer["Book"];
-                string errorMesage = string.Format(_localizer["Display_Name_Not_Found"], localizedFieldName);
-                throw new CustomException(errorMesage);
-            }
-            
         }
 
         public async Task<bool> DoesEntityExistAsync(IConvertible Id)
@@ -84,6 +69,17 @@ namespace CityLibraryApi.Services.Book.Classes
                                 ReservedCount = x.ReservedCount
                             })
                             .ToDictionaryAsync(x => x.BookId);
+        }
+
+        public async Task DeleteByIdWithBuilDelete(DeleteBookDto dto)
+        {
+            int affectedRows = await _booksRepo.BulkSoftDeleteAsync(x => x.BookId == dto.BookId, GetMyUserId());
+            if (affectedRows < 1)
+            {
+                string localizedFieldName = _localizer["Book"];
+                string errorMesage = string.Format(_localizer["Display_Name_Not_Found"], localizedFieldName);
+                throw new CustomException(errorMesage);
+            }
         }
 
         public async Task<int> GetNumberOfAuthorsFromBookTableAsync()

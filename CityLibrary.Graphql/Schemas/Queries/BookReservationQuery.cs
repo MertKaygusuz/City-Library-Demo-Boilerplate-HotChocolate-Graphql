@@ -11,7 +11,7 @@ public class BookReservationQuery
 {
     [Authorize(Roles = new [] { "Admin" })]
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
-    public IQueryable<ActiveBookReservationResolverType> GetAllActiveBookReservations([Service] IBookReservationService reservationService)
+    public IQueryable<ActiveBookReservationResolverType> GetAllActiveBookReservations([Service(ServiceKind.Resolver)] IBookReservationService reservationService)
     {
         return reservationService.GetAllActiveBookReservations().Select(x => new ActiveBookReservationResolverType()
         {
@@ -26,7 +26,7 @@ public class BookReservationQuery
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByMember(
         [UseFluentValidation] ReservationHistoryMemberDto dto,
-        [Service] IBookReservationService reservationService)
+        [Service(ServiceKind.Resolver)] IBookReservationService reservationService)
     {
         return reservationService.GetReservationHistoryByMember(dto).Select(x =>
             new BookReservationHistoriesResolverType()
@@ -43,7 +43,7 @@ public class BookReservationQuery
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByBook(
         [UseFluentValidation] ReservationHistoryBookDto dto,
-        [Service] IBookReservationService reservationService)
+        [Service(ServiceKind.Resolver)] IBookReservationService reservationService)
     {
         return reservationService.GetReservationHistoryByBook(dto).Select(x =>
             new BookReservationHistoriesResolverType()
@@ -55,16 +55,16 @@ public class BookReservationQuery
                 BookId = x.BookId
             });
     }
-
+    
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
-    public IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber([Service] IBookReservationService reservationService)
+    public IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber([Service(ServiceKind.Resolver)] IBookReservationService reservationService)
     {
         return reservationService.GetNumberOfBooksPerTitleAndEditionNumber();
     }
     
     [Authorize(Roles = new [] { "Admin" })]
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
-    public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers([Service] IBookReservationService reservationService)
+    public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers([Service(ServiceKind.Resolver)] IBookReservationService reservationService)
     {
         return reservationService.GetNumberOfBooksReservedPerMembers();
     }

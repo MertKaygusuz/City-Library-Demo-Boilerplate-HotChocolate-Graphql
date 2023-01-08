@@ -25,13 +25,6 @@ namespace CityLibraryApi.Services.Book.Interfaces
         /// <returns></returns>
         Task UpdateBookInfoAsync(UpdateBookDto dto);
 
-        /// <summary>
-        /// Soft delete for book records
-        /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
-        Task DeleteBookAsync(DeleteBookDto dto);
-
         Task<int> GetNumberOfDistinctTitleAsync();
 
         Task<int> GetNumberOfAuthorsFromBookTableAsync();
@@ -44,5 +37,7 @@ namespace CityLibraryApi.Services.Book.Interfaces
         /// <param name="bookIds">Book ids to get data</param>
         /// <returns></returns>
         Task<IReadOnlyDictionary<int, BookLoaderDto>> GetManyBooksByIds(IEnumerable<int> bookIds);
+
+        Task DeleteByIdWithBuilDelete(DeleteBookDto dto);
     }
 }
