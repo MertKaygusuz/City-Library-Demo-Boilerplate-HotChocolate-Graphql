@@ -13,12 +13,9 @@ namespace CityLibraryDomain.Seeds
     {
         public void Configure(EntityTypeBuilder<Roles> builder)
         {
-            Roles[] roles = new Roles[] 
-            { 
+            builder.HasData(
                 new Roles { RoleId = 1, RoleName = "Admin", CreatedAt = DateTime.Now },
-                new Roles { RoleId = 2, RoleName = "User", CreatedAt = DateTime.Now }
-            };
-            builder.HasData(roles);
+                new Roles { RoleId = 2, RoleName = "User", CreatedAt = DateTime.Now });
         }
     }
 }

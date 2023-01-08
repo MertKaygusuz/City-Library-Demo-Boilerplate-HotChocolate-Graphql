@@ -14,9 +14,14 @@ namespace CityLibraryDomain.Seeds
     {
         public void Configure(EntityTypeBuilder<Members> builder)
         {
-            string sharedPassword = "1234567890";
+            builder.HasData(GetSeedData());
+        }
+
+        private static Members[] GetSeedData()
+        { 
+            const string sharedPassword = "1234567890";
             sharedPassword.CreatePasswordHash(out string hashedPass);
-            var members = new Members[]
+            return new Members[]
             {
                 new Members
                 {
@@ -118,8 +123,6 @@ namespace CityLibraryDomain.Seeds
                     CreatedAt = DateTime.Now.AddYears(-1)
                 }
             };
-
-            builder.HasData(members);
         }
     }
 }

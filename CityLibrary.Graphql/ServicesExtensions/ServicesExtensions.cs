@@ -128,6 +128,9 @@ namespace CityLibrary.Graphql.ServicesExtensions
                 .AddType<MemberMutation>()
                 .AddType<BookMutation>()
                 .AddType<BookReservationMutation>()
+                .AddFiltering()
+                .AddSorting()
+                .AddProjections()
                 .AddFluentValidation(o =>
                 {
                     o.UseErrorMapper((builder, context) =>

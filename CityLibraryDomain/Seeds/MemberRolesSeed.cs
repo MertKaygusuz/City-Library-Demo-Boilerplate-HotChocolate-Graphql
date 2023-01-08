@@ -13,6 +13,11 @@ namespace CityLibraryDomain.Seeds
     {
         public void Configure(EntityTypeBuilder<MemberRoles> builder)
         {
+            builder.HasData(GetSeedData());
+        }
+
+        private static MemberRoles[] GetSeedData()
+        {
             var memberRoles = new MemberRoles[12];
             
             memberRoles[0] = new MemberRoles
@@ -41,8 +46,8 @@ namespace CityLibraryDomain.Seeds
                 };
                 id++;
             }
-            
-            builder.HasData(memberRoles);
+
+            return memberRoles;
         }
     }
 }

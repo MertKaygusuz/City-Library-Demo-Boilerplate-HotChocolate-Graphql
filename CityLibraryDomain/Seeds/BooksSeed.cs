@@ -14,7 +14,12 @@ namespace CityLibraryDomain.Seeds
     {
         public void Configure(EntityTypeBuilder<Books> builder)
         {
-            var books = new Books[]
+            builder.HasData(GetSeedData());
+        }
+
+        private static Books[] GetSeedData()
+        {
+            return new Books[]
             {
                 new Books
                 {
@@ -297,8 +302,6 @@ namespace CityLibraryDomain.Seeds
                      CreatedAt = DateTime.Now.AddYears(-1)
                  }
             };
-
-            builder.HasData(books);
         }
     }
 }

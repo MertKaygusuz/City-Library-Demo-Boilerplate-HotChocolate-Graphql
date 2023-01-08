@@ -8,6 +8,7 @@ namespace CityLibrary.Graphql.Schemas.Queries;
 public class MemberQuery
 {
     [Authorize(Roles = new [] { "Admin" })]
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<MemberResponseDto> GetAllMembers([Service] IMemberService memberService)
     {
         return memberService.GetAllMembers();

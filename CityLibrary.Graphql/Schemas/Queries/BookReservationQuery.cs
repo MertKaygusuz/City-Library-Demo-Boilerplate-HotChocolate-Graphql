@@ -10,6 +10,7 @@ namespace CityLibrary.Graphql.Schemas.Queries;
 public class BookReservationQuery
 {
     [Authorize(Roles = new [] { "Admin" })]
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<ActiveBookReservationResolverType> GetAllActiveBookReservations([Service] IBookReservationService reservationService)
     {
         return reservationService.GetAllActiveBookReservations().Select(x => new ActiveBookReservationResolverType()
@@ -22,6 +23,7 @@ public class BookReservationQuery
     }
     
     [Authorize(Roles = new [] { "Admin" })]
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByMember(
         [UseFluentValidation] ReservationHistoryMemberDto dto,
         [Service] IBookReservationService reservationService)
@@ -38,6 +40,7 @@ public class BookReservationQuery
     }
     
     [Authorize(Roles = new [] { "Admin" })]
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<BookReservationHistoriesResolverType> GetReservationHistoryByBook(
         [UseFluentValidation] ReservationHistoryBookDto dto,
         [Service] IBookReservationService reservationService)
@@ -53,12 +56,14 @@ public class BookReservationQuery
             });
     }
 
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<NumberOfBooksPerTitleAndEditionNumberResponseDto> GetNumberOfBooksPerTitleAndEditionNumber([Service] IBookReservationService reservationService)
     {
         return reservationService.GetNumberOfBooksPerTitleAndEditionNumber();
     }
     
     [Authorize(Roles = new [] { "Admin" })]
+    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 3, MaxPageSize = 10), UseProjection, UseFiltering, UseSorting]
     public IQueryable<NumberOfBooksReservedByMembersResponseDto> GetNumberOfBooksReservedPerMembers([Service] IBookReservationService reservationService)
     {
         return reservationService.GetNumberOfBooksReservedPerMembers();
