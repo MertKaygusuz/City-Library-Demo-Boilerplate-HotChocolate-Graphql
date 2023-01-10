@@ -33,7 +33,6 @@ namespace CityLibrary.Graphql.ServicesExtensions
                 var triggerAssembly = Assembly.GetAssembly(typeof(AppDbContext));
                 options.UseTriggers(triggerOptions => triggerOptions.AddAssemblyTriggers(triggerAssembly!));
                 options.UseSqlite(appSetting.DbConnectionString).LogTo(Log.Logger.Information, LogLevel.Information);
-                // options.UseInMemoryDatabase(appSetting.DbConnectionString);
             });
 
             services.AddSingleton<ICustomMapper, MapsterMapping>();
@@ -120,7 +119,7 @@ namespace CityLibrary.Graphql.ServicesExtensions
             const string fluentValidationCode = "FLUENT_VALIDATION_ERROR";
             services
                 .AddGraphQLServer()
-                .RegisterDbContext<AppDbContext>()
+                .RegisterDbContext<AppDbContext>(DbContextKind.Resolver)
                 .AddAuthorization()
                 .AddQueryType<Query>()
                 .AddMutationType<Mutation>()

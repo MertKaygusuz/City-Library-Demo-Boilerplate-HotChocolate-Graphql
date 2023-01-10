@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using CityLibraryInfrastructure.ExceptionHandling;
 using CityLibraryInfrastructure.ExceptionHandling.Dtos;
 using CityLibraryInfrastructure.Resources;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Localization;
 
 namespace CityLibraryApi.Services.Member.Classes
@@ -48,6 +49,16 @@ namespace CityLibraryApi.Services.Member.Classes
 
         public async Task<string> RegisterAsync(RegistrationDto registrationDto)
         {
+            #region user name check
+            bool memberNameAlreadyTaken = await _membersRepo.DoesEntityExistAsync(registrationDto.UserName);
+
+            if (memberNameAlreadyTaken)
+            {
+                var err = new ErrorDto();
+                err.Errors.Add(nameof(registrationDto.UserName), new List<string>() { string.Format(_localizer["User_Name_Check"], registrationDto.UserName) });
+                throw new CustomException(JsonSerializer.Serialize(err), true);
+            }
+            #endregion
             Members newMember = _mapper.Map<RegistrationDto, Members>(registrationDto);
             newMember.Password.CreatePasswordHash(out string hashedPass);
             newMember.Password = hashedPass;
@@ -57,24 +68,10 @@ namespace CityLibraryApi.Services.Member.Classes
             
             newMember.Roles.AddRange(roles);
 
-            try
-            {
-                await _membersRepo.InsertAsync(newMember);
+            await _membersRepo.InsertAsync(newMember);
 
-                await _unitOfWork.CommitAsync();
-            }
-            catch (ArgumentException exc)
-            {
-                if (exc.Message.Contains("An item with the same key has already been added"))
-                {
-                    var err = new ErrorDto();
-                    err.Errors.Add(nameof(registrationDto.UserName), new List<string>() { string.Format(_localizer["User_Name_Check"], registrationDto.UserName) });
-                    throw new CustomException(JsonSerializer.Serialize(err), true);
-                }
-                throw;
-            }
-           
-
+            await _unitOfWork.CommitAsync();
+            
             return newMember.UserName;
         }
 
