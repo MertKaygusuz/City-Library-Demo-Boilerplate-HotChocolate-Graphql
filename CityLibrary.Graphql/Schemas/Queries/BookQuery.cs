@@ -1,6 +1,6 @@
 using CityLibraryApi.Dtos.Book;
 using CityLibraryApi.Services.Book.Interfaces;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace CityLibrary.Graphql.Schemas.Queries;
 

@@ -1,7 +1,7 @@
 using AppAny.HotChocolate.FluentValidation;
 using CityLibraryApi.Dtos.BookReservation;
 using CityLibraryApi.Services.BookReservation.Interfaces;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 
 namespace CityLibrary.Graphql.Schemas.Mutations;
 

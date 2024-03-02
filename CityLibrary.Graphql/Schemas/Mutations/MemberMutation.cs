@@ -1,7 +1,7 @@
 using AppAny.HotChocolate.FluentValidation;
 using CityLibraryApi.Dtos.Member;
 using CityLibraryApi.Services.Member.Interfaces;
-using HotChocolate.AspNetCore.Authorization;
+using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityLibrary.Graphql.Schemas.Mutations;
